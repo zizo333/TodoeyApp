@@ -10,20 +10,10 @@
         <scene sceneID="BmZ-yH-uZj">
             <objects>
                 <tableViewController id="ePC-M1-tDJ" customClass="TodoeyViewController" customModule="TodoeyApp" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="sIG-DA-gYl">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="60" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="sIG-DA-gYl">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="86" id="P5s-tj-5vk">
-                                <rect key="frame" x="0.0" y="28" width="414" height="86"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="P5s-tj-5vk" id="68j-s7-gVv">
-                                    <rect key="frame" x="0.0" y="0.0" width="414" height="86"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
                         <connections>
                             <outlet property="dataSource" destination="ePC-M1-tDJ" id="bSg-Qq-Rjg"/>
                             <outlet property="delegate" destination="ePC-M1-tDJ" id="5Y8-Fr-8Bo"/>
@@ -32,6 +22,9 @@
                     <navigationItem key="navigationItem" title="Todoey" id="dIa-Db-89f">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="dva-Zu-AV7">
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <connections>
+                                <action selector="addNewItemBarButtonAction:" destination="ePC-M1-tDJ" id="fA4-Yq-6VJ"/>
+                            </connections>
                         </barButtonItem>
                     </navigationItem>
                 </tableViewController>

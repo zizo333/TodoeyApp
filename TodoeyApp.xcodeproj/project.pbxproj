@@ -64,6 +64,7 @@
 			children = (
 				2430327923C87E6B00A4C8D5 /* Core */,
 				2430327A23C87E7400A4C8D5 /* Controller */,
+				2430328323C88B8E00A4C8D5 /* Model */,
 				2430327B23C87E7D00A4C8D5 /* View */,
 				2430327C23C87EA500A4C8D5 /* Source */,
 				2430327D23C87EB600A4C8D5 /* Config */,
@@ -122,6 +123,13 @@
 				2430328023C8803B00A4C8D5 /* TodoeyCell.xib */,
 			);
 			path = CustomCell;
+			sourceTree = "<group>";
+		};
+		2430328323C88B8E00A4C8D5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
