@@ -7,34 +7,46 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class TodoeyViewController: UITableViewController {
 
     // MARK: - Variables
-    var itemArray: [Item] = []
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let realm = try! Realm()
+    var itemsData: Results<Item>?
+    var selectedCategory: Category? {
+        didSet {
+            loadItems()
+        }
+    }
     
     // MARK: - Life cycles
     override func viewDidLoad() {
         super.viewDidLoad()
-                
         addCustomCell()
-        loadItems()
     }
 
     // MARK: - Actions
     @IBAction func addNewItemBarButtonAction(_ sender: UIBarButtonItem) {
         var textField = UITextField()
-        
+
         let alert = UIAlertController(title: "Add new item", message: "", preferredStyle: .alert)
         let saveAction = UIAlertAction(title: "Save", style: .default) { (action) in
-            let newItem = textField.text!
-            let item = Item(context: self.context)
-            item.title = newItem
-            item.done = false
-            self.itemArray.append(item)
-            self.saveNewItem()
+            if let currentCategory = self.selectedCategory {
+                do {
+                    try self.realm.write {
+                        let newItem = textField.text!
+                        let item = Item()
+                        item.title = newItem
+                        item.dateCreated = Date()
+                        currentCategory.items.append(item)
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+            
+            self.tableView.reloadData()
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         alert.addTextField { (alertTF) in
@@ -54,48 +66,69 @@ class TodoeyViewController: UITableViewController {
         tableView.register(nibCell, forCellReuseIdentifier: "Cell")
     }
     
-    /*** save new item the itemArray ***/
-    func saveNewItem() {
-        do {
-            try context.save()
-        } catch {
-            print(error.localizedDescription)
-        }
-        self.tableView.reloadData()
-    }
-    
     /*** load all items ***/
     func loadItems() {
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
-        do {
-            itemArray = try context.fetch(request)
-        } catch {
-            print(error.localizedDescription)
-        }
+        itemsData = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
+        tableView.reloadData()
     }
 }
 
 // MARK: - cofigure table view
 extension TodoeyViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
+        return itemsData?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! TodoeyCell
-        let currentItem = itemArray[indexPath.row]
-        cell.titleLbl.text = currentItem.title
-        cell.accessoryType = currentItem.done ? .checkmark : .none
+        if let items = itemsData {
+            let currentItem = items[indexPath.row]
+            cell.titleLbl.text = currentItem.title
+            cell.accessoryType = currentItem.done ? .checkmark : .none
+        } else {
+            cell.titleLbl.text = "No Items Added Yet"
+        }
+        
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
-        saveNewItem()
+        if let item = itemsData?[indexPath.row] {
+            do {
+                try realm.write {
+                    item.done = !item.done
+                }
+            } catch {
+                print(error.localizedDescription)
+            }
+        }
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60
     }
+}
+
+ // MARK: - Configure search bar
+extension TodoeyViewController: UISearchBarDelegate {
+
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        makeSearchRequest(from: searchBar)
+    }
+
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+    }
+    
+    func makeSearchRequest(from searchBar: UISearchBar) {
+        if !searchBar.text!.isEmpty {
+            itemsData = itemsData?.filter("title CONTAINS[cd] %@", searchBar.text!).sorted(byKeyPath: "dateCreated", ascending: true)
+        } else {
+            loadItems()
+        }
+        tableView.reloadData()
+    }
+    
 }
